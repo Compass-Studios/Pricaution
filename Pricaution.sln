@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pricaution.Backend", "Pricaution.Backend\Pricaution.Backend.csproj", "{1EC76F71-55E9-4020-81BA-1CA133F14AD1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pricaution.WebScraper", "Pricaution.WebScraper\Pricaution.WebScraper.csproj", "{36884C84-66CE-4CDF-B78E-D2E000FD73C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{1EC76F71-55E9-4020-81BA-1CA133F14AD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EC76F71-55E9-4020-81BA-1CA133F14AD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EC76F71-55E9-4020-81BA-1CA133F14AD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36884C84-66CE-4CDF-B78E-D2E000FD73C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36884C84-66CE-4CDF-B78E-D2E000FD73C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36884C84-66CE-4CDF-B78E-D2E000FD73C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36884C84-66CE-4CDF-B78E-D2E000FD73C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
