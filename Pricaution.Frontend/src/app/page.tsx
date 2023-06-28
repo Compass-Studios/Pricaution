@@ -1,5 +1,4 @@
 "use client"
-import styles from './page.module.css'
 import {Container, Typography} from "@mui/material";
 
 export default function Home() {
