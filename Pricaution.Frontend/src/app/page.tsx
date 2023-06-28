@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <Container>
       <Typography variant="h1">
-        siema
+          Be precautious with your purchase
       </Typography>
     </Container>
   )
