@@ -1,8 +1,8 @@
-﻿using System.Collections.ObjectModel;
-using System.Drawing;
+﻿using Newtonsoft.Json;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Chromium;
+using Pricaution.WebScraper.Helpers;
+using Pricaution.WebScraper.Parsers;
+using Pricaution.WebScraper.Scrapers;
 using Spectre.Console;
 using Color = Spectre.Console.Color;
 
@@ -10,97 +10,78 @@ namespace Pricaution.WebScraper
 {
 	public class WebScraper
 	{
-		private static List<string> listingLinks = new();
-		private const string baseUrl = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/dabrowa-gornicza?distanceRadius=0&locations=%5Bcities_6-134%5D&limit=72";
-
-
-		public static void Main()
+		public static void Main(string[] args)
 		{
 			AnsiConsole.Write(new FigletText("Pricaution Web Scraper").Centered().Color(Color.DodgerBlue1));
 
-			SetupBrowser(out ChromeDriver driver, true);
+			BrowserDriver browserChoice = BrowserDriver.Edge;
 
-			driver.Navigate().GoToUrl(baseUrl);
+			// Get browser from arguments
+			ArgumentParser.ParseArguments(args);
+			if (ArgumentParser.GetValue("browser", out string browser))
+				browserChoice = Enum.Parse<BrowserDriver>(browser);
 
-			// Get initial page info
-			IWebElement[] pages = driver.FindElement(By.ClassName("css-geek62")).FindElements(By.TagName("button")).ToArray(); // Get bottom page navigation
-			ushort pageCount = Convert.ToUInt16(pages[^2].Text); // Get amount of pages (from button that navigates to the last one)
-			ushort listingCount = Convert.ToUInt16(driver.FindElement(By.ClassName("css-19fwpg")).Text); // Get listing count (global)
-			ushort lastPageListingCount = (ushort)(listingCount % 72); // Get listing count (last page)
+			// If '--browser <name>' argument is not used, show prompt with available browsers 
+			ArgumentHelper.RunIfUsed("browser", () =>
+			{
+				browserChoice = AnsiConsole.Prompt(
+					new SelectionPrompt<BrowserDriver>()
+						.Title("Select [green bold]browser[/] you want to use")
+						.PageSize(3)
+						.AddChoices(BrowserDriver.Chrome, BrowserDriver.Edge, BrowserDriver.Firefox));
+			}, false);
 
-			AnsiConsole.Progress()
-				.AutoRefresh(true)
-				.HideCompleted(true)
-				.Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn(), new SpinnerColumn(Spinner.Known.Dots))
-				.Start(ctx =>
-				{
-					ProgressTask task = ctx.AddTask("[green]Scraping listing links[/]");
-					
-					for (ushort i = 1; i <= pageCount; i++)
-					{
-						bool isLastPage = (i == pageCount);
+			// Get city to scrape
+			CitySelectModel cityChoice;
+			if (ArgumentParser.GetValue("city", out string _cityToScrape))
+				cityChoice = Enum.Parse<CitySelectModel>(_cityToScrape);
+			else
+			{
+				cityChoice = AnsiConsole.Prompt(
+					new SelectionPrompt<CitySelectModel>()
+						.Title("Select [green bold]city[/] you want to scrape")
+						.PageSize(15)
+						.AddChoices(CitySelectModel.Będzin, CitySelectModel.Białystok, CitySelectModel.Bydgoszcz, CitySelectModel.DąbrowaGórnicza, CitySelectModel.Gdańsk, CitySelectModel.Katowice, CitySelectModel.Kielce,
+							CitySelectModel.Kraków, CitySelectModel.Łódź, CitySelectModel.Poznań, CitySelectModel.Rzeszów, CitySelectModel.Szczecin, CitySelectModel.Toruń, CitySelectModel.Warszawa, CitySelectModel.Wrocław));
+			}
 
-						// Retry if rate limited (listings per page != scraped listing from current page)
-						if (!ScrapeListings(driver, i, isLastPage ? lastPageListingCount : (ushort)72))
-							i--;
-						else
-							task.Increment(isLastPage ? (100 / pageCount + 4) : (100 / pageCount));
+			// Check for headless mode
+			bool headless = false;
+			ArgumentHelper.RunIfUsed("headless", () => { headless = true; });
+			if (headless is false)
+				headless = AnsiConsole.Prompt(
+					new SelectionPrompt<bool>()
+						.Title("Do you want to run in headless mode?")
+						.PageSize(3)
+						.AddChoices(true, false)
+						.UseConverter((choice) =>
+						{
+							if (choice)
+								return "Yes (recommended)";
 
-						if (!isLastPage)
-							Thread.Sleep(5_000);
-					}
-				});
+							return "No";
+						}));
+
+			BrowserHelper.SetupBrowser(out WebDriver driver, browserChoice, headless);
+
+			List<string> listingLinks = MainPageScraper.Scrape(driver, CitySelectParser.Parse(cityChoice));
+
+			// What the actual FUCK. I don't know why results are duplicated, but Distinct() removes most of them*
+			// *most of them - from my test it should return 656, but it returned 658
+			// It kinda works, so don't touch it, I might try fix it in future
+			listingLinks = listingLinks.Distinct().ToList();
+
+			AnsiConsole.MarkupLine($"[green]Listings: {listingLinks.Count}[/]");
+
+			List<OfferModel> offers = OfferScraper.Scrape(driver, listingLinks, cityChoice);
+
+			AnsiConsole.MarkupLine($"[green]Viable offers: {listingLinks.Count}[/]");
+			AnsiConsole.MarkupLine($"[green]Saving file to json...[/]");
+			DataSerializer.SaveToFile(offers, cityChoice);
+			AnsiConsole.MarkupLine($"[green]Done![/]");
 
 			Console.ReadLine();
 			driver.Quit();
-		}
-
-		private static void SetupBrowser(out ChromeDriver driver, bool headless = true)
-		{
-			ChromeOptions o = new();
-
-			driver = new ChromeDriver(o);
-			driver.CloseDevToolsSession();
-
-			if (headless)
-				driver.Manage().Window.Position = new Point(-2000, 0);
-		}
-
-		private static void SetupPage(ChromeDriver driver)
-		{
-			// Scroll to bottom to bypass lazy-loading
-			driver.ExecuteScript("window.scrollBy(0, 100_000)", "");
-
-			// Remove "Promoted listings"
-			driver.ExecuteScript("document.querySelectorAll('.css-1dcvyuj')[0].remove()", "");
-		}
-
-		/// <summary>
-		/// Scrapes current page to get links to individual listings
-		/// </summary>
-		/// <param name="driver">WebDriver</param>
-		/// <param name="page">Page number to scrape</param>
-		/// <param name="supposedListingCount">Supposed count of listing</param>
-		/// <returns>If supposedListingCount was the same as amount of listings</returns>
-		private static bool ScrapeListings(ChromeDriver driver, ushort page, ushort supposedListingCount)
-		{
-			driver.Navigate().GoToUrl($"{baseUrl}&page={page}");
-
-			SetupPage(driver);
-
-			ReadOnlyCollection<IWebElement> listings = driver.FindElements(By.ClassName("css-iq9jxc"));
-
-			// Check if we are rate limited
-			if (supposedListingCount != listings.Count)
-				return false;
-
-			foreach (IWebElement listing in listings)
-			{
-				string link = listing.FindElement(By.TagName("a")).GetAttribute("href");
-				listingLinks.Add(link);
-			}
-
-			return true;
 		}
 	}
 }
