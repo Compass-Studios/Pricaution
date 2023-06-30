@@ -80,7 +80,10 @@ namespace Pricaution.WebScraper
 			DataSerializer.SaveToFile(offers, cityChoice);
 			AnsiConsole.MarkupLine($"[green]Done![/]");
 
-			Console.ReadLine();
+			Console.Beep();
+			Console.Beep();
+			Console.Beep();
+
 			driver.Quit();
 		}
 	}
