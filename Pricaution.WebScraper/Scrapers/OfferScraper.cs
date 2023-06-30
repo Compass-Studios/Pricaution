@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using OpenQA.Selenium;
 using Pricaution.WebScraper.Helpers;
+using Pricaution.WebScraper.Parsers;
 using Spectre.Console;
 
 namespace Pricaution.WebScraper.Scrapers
@@ -34,7 +35,7 @@ namespace Pricaution.WebScraper.Scrapers
 						task.Increment(100d / listingLinks.Count);
 
 						if (!isLastOffer)
-							Thread.Sleep(5_000);
+							Thread.Sleep(ArgumentParser.GetValue("threshold", out string value) ? Convert.ToInt32(value) : 5000);
 					}
 				});
 
@@ -49,6 +50,15 @@ namespace Pricaution.WebScraper.Scrapers
 
 			try
 			{
+				string name = driver.FindElement(By.ClassName("css-1wnihf5")).Text;
+				IWebElement imageCarousel = driver.FindElement(By.ClassName("image-gallery-thumbnails-container"));
+				IWebElement[] _images = imageCarousel.FindElements(By.TagName("img")).ToArray();
+				List<string> images = new();
+				foreach (IWebElement image in _images)
+				{
+					images.Add(image.GetAttribute("src"));
+				}
+				
 				string _street = driver.FindElement(By.ClassName(LocationTextClass)).Text; // Get street
 				string? street = DataParser.Street(_street); // Parse street
 				if (street is null)
@@ -124,6 +134,9 @@ namespace Pricaution.WebScraper.Scrapers
 
 				return new()
 				{
+					Name = name,
+					Link = url,
+					ImageUrls = images,
 					Address = street,
 					City = city,
 					Floor = floor,

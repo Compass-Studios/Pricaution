@@ -2,6 +2,9 @@
 {
 	internal class OfferModel
 	{
+		public string Name { get; init; }
+		public string Link { get; init; }
+		public List<string> ImageUrls { get; init; }
 		public string Address { get; init; }
 		public string City { get; init; }
 		public short Floor { get; init; } 

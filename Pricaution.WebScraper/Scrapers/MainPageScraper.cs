@@ -8,7 +8,6 @@ namespace Pricaution.WebScraper.Scrapers
 	internal static class MainPageScraper
 	{
 		private static List<string> listingLinks = new();
-
 		private static ushort ListingCount { get; set; }
 		
 		public static List<string> Scrape(WebDriver driver, string url)
