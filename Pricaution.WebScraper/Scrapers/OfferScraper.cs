@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using OpenQA.Selenium;
 using Pricaution.WebScraper.Helpers;
+using Pricaution.WebScraper.Parsers;
 using Spectre.Console;
 
 namespace Pricaution.WebScraper.Scrapers
@@ -34,7 +35,7 @@ namespace Pricaution.WebScraper.Scrapers
 						task.Increment(100d / listingLinks.Count);
 
 						if (!isLastOffer)
-							Thread.Sleep(5_000);
+							Thread.Sleep(ArgumentParser.GetValue("threshold", out string value) ? Convert.ToInt32(value) : 5000);
 					}
 				});
 

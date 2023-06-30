@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using Pricaution.WebScraper.Helpers;
 using Pricaution.WebScraper.Parsers;
 using Pricaution.WebScraper.Scrapers;
