@@ -20,23 +20,30 @@ namespace Pricaution.WebScraper.Helpers
 				}
 				case BrowserDriver.Chrome:
 				{
-					driver = new ChromeDriver();
+					ChromeOptions options = new();
+					if (headless)
+						options.AddArgument("--headless=new");
+					
+					driver = new ChromeDriver(options);
 					break;
 				}
 				case BrowserDriver.Firefox:
 				{
-					driver = new FirefoxDriver();
+					FirefoxOptions options = new();
+					if (headless)
+						options.AddArgument("--headless=new");
+					driver = new FirefoxDriver(options);
 					break;
 				}
 				default:
 				{
-					driver = new EdgeDriver();
+					EdgeOptions options = new();
+					if (headless)
+						options.AddArgument("--headless=new");
+					driver = new EdgeDriver(options);
 					break;
 				}
 			}
-
-			if (headless)
-				driver.Manage().Window.Position = new Point(-2000, 0);
 		}
 		
 		public static void SetupMainPage(WebDriver driver)
