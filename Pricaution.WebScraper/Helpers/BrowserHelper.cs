@@ -1,9 +1,7 @@
-﻿using System.Drawing;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
-using Pricaution.WebScraper.Parsers;
 
 namespace Pricaution.WebScraper.Helpers
 {
@@ -48,11 +46,24 @@ namespace Pricaution.WebScraper.Helpers
 		
 		public static void SetupMainPage(WebDriver driver)
 		{
-			// Scroll to bottom to bypass lazy-loading
-			driver.ExecuteScript("window.scrollBy(0, 100_000)", "");
+			try
+			{
+				string scrollAndRemoveScript = """
+try {
+	window.scrollBy(0, 100_000);
+	document.querySelectorAll('.css-1dcvyuj')[0].remove();
+} catch {
 
-			// Remove "Promoted listings"
-			driver.ExecuteScript("document.querySelectorAll('.css-1dcvyuj')[0].remove()", "");
+}
+""";
+				
+				// Scroll to bottom to bypass lazy-loading & reemove "Promoted listings"
+				driver.ExecuteScript(scrollAndRemoveScript, "");
+			}
+			catch
+			{
+				// ignored
+			}
 		}
 		
 		public static void SetupOfferPage(WebDriver driver)
