@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using System.Drawing;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
@@ -14,31 +15,29 @@ namespace Pricaution.WebScraper.Helpers
 				case BrowserDriver.Edge:
 				{
 					driver = new EdgeDriver();
+					if (!headless)
+						driver.Manage().Window.Position = new Point(-2000, 0);
 					break;
 				}
 				case BrowserDriver.Chrome:
 				{
-					ChromeOptions options = new();
-					if (headless)
-						options.AddArgument("--headless=new");
-					
-					driver = new ChromeDriver(options);
+					driver = new ChromeDriver();
+					if (!headless)
+						driver.Manage().Window.Position = new Point(-2000, 0);
 					break;
 				}
 				case BrowserDriver.Firefox:
 				{
-					FirefoxOptions options = new();
-					if (headless)
-						options.AddArgument("--headless=new");
-					driver = new FirefoxDriver(options);
+					driver = new FirefoxDriver();
+					if (!headless)
+						driver.Manage().Window.Position = new Point(-2000, 0);
 					break;
 				}
 				default:
 				{
-					EdgeOptions options = new();
-					if (headless)
-						options.AddArgument("--headless=new");
-					driver = new EdgeDriver(options);
+					driver = new EdgeDriver();
+					if (!headless)
+						driver.Manage().Window.Position = new Point(-2000, 0);
 					break;
 				}
 			}
