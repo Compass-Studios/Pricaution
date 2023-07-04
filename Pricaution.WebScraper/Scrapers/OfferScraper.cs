@@ -22,7 +22,7 @@ namespace Pricaution.WebScraper.Scrapers
 				.Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn(), new SpinnerColumn(Spinner.Known.Dots))
 				.Start(ctx =>
 				{
-					ProgressTask task = ctx.AddTask("[green]Scraping listing links[/]");
+					ProgressTask task = ctx.AddTask("[green]Scraping offers[/]");
 
 					for (ushort i = 0; i < listingCount; i++)
 					{
