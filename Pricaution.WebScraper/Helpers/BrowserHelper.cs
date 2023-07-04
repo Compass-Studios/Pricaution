@@ -2,7 +2,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
-using OpenQA.Selenium.Firefox;
+using Pricaution.WebScraper.Models;
 using Pricaution.WebScraper.Parsers;
 
 namespace Pricaution.WebScraper.Helpers
@@ -15,32 +15,32 @@ namespace Pricaution.WebScraper.Helpers
 			{
 				case BrowserDriver.Edge:
 				{
-					driver = new EdgeDriver();
+					EdgeOptions o = new();
+					o.AddArgument("--no-sandbox");
+					driver = new EdgeDriver(EdgeDriverService.CreateDefaultService(), o, TimeSpan.FromMinutes(5));
+					if (!headless)
+						driver.Manage().Window.Position = new Point(0, -2000);
+					driver.Manage().Timeouts().PageLoad.Add(TimeSpan.FromMilliseconds(ArgumentParser.GetValue("threashold", out string value) ? Convert.ToDouble(value) : 5000));
 					break;
 				}
 				case BrowserDriver.Chrome:
 				{
-					ChromeOptions options = new();
+					ChromeOptions o = new();
+					o.AddArgument("--no-sandbox");
+					driver = new ChromeDriver(ChromeDriverService.CreateDefaultService(), o, TimeSpan.FromMinutes(5));
 					if (headless)
-						options.AddArgument("--headless=new");
-					
-					driver = new ChromeDriver(options);
-					break;
-				}
-				case BrowserDriver.Firefox:
-				{
-					FirefoxOptions options = new();
-					if (headless)
-						options.AddArgument("--headless=new");
-					driver = new FirefoxDriver(options);
+						driver.Manage().Window.Position = new Point(0, -2000);
+					driver.Manage().Timeouts().PageLoad.Add(TimeSpan.FromMilliseconds(ArgumentParser.GetValue("threashold", out string value) ? Convert.ToDouble(value) : 5000));
 					break;
 				}
 				default:
 				{
-					EdgeOptions options = new();
+					EdgeOptions o = new();
+					o.AddArgument("--no-sandbox");
+					driver = new EdgeDriver(EdgeDriverService.CreateDefaultService(), o, TimeSpan.FromMinutes(5));
 					if (headless)
-						options.AddArgument("--headless=new");
-					driver = new EdgeDriver(options);
+						driver.Manage().Window.Position = new Point(0, -2000);
+					driver.Manage().Timeouts().PageLoad.Add(TimeSpan.FromMilliseconds(ArgumentParser.GetValue("threashold", out string value) ? Convert.ToDouble(value) : 5000));
 					break;
 				}
 			}
@@ -48,11 +48,24 @@ namespace Pricaution.WebScraper.Helpers
 		
 		public static void SetupMainPage(WebDriver driver)
 		{
-			// Scroll to bottom to bypass lazy-loading
-			driver.ExecuteScript("window.scrollBy(0, 100_000)", "");
+			try
+			{
+				string scrollAndRemoveScript = """
+try {
+	window.scrollBy(0, 100_000);
+	document.querySelectorAll('.css-1dcvyuj')[0].remove();
+} catch {
 
-			// Remove "Promoted listings"
-			driver.ExecuteScript("document.querySelectorAll('.css-1dcvyuj')[0].remove()", "");
+}
+""";
+				
+				// Scroll to bottom to bypass lazy-loading & remove "Promoted listings"
+				driver.ExecuteScript(scrollAndRemoveScript, "");
+			}
+			catch
+			{
+				// ignored
+			}
 		}
 		
 		public static void SetupOfferPage(WebDriver driver)
@@ -66,7 +79,7 @@ namespace Pricaution.WebScraper.Helpers
 			// felt cute, might delete later
 			string removePinScript = """
 try {
-document.querySelectorAll('.fa-map-marker-alt')[0].remove();
+	document.querySelectorAll('.fa-map-marker-alt')[0].remove();
 } catch {
 
 }

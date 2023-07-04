@@ -1,4 +1,7 @@
-﻿namespace Pricaution.WebScraper
+﻿// Disable warnings about missing constructor
+#pragma warning disable CS8618
+
+namespace Pricaution.WebScraper.Models
 {
 	internal class OfferModel
 	{
