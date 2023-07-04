@@ -33,9 +33,6 @@ namespace Pricaution.WebScraper.Scrapers
 							i--;
 						else
 							task.Increment(100d / pageCount);
-
-						// if (!isLastPage)
-							// Thread.Sleep(2_000);
 					}
 				});
 
