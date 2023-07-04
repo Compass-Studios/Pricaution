@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using Pricaution.WebScraper.Helpers;
+using Pricaution.WebScraper.Models;
 using Pricaution.WebScraper.Parsers;
 using Pricaution.WebScraper.Scrapers;
 using Spectre.Console;

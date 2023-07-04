@@ -1,4 +1,6 @@
-﻿namespace Pricaution.WebScraper
+﻿using Pricaution.WebScraper.Models;
+
+namespace Pricaution.WebScraper.Parsers
 {
 	internal static class CitySelectParser
 	{

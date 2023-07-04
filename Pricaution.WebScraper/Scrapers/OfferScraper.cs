@@ -1,6 +1,6 @@
-﻿using System.Drawing;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using Pricaution.WebScraper.Helpers;
+using Pricaution.WebScraper.Models;
 using Pricaution.WebScraper.Parsers;
 using Spectre.Console;
 

@@ -2,7 +2,8 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
-using OpenQA.Selenium.Firefox;
+using Pricaution.WebScraper.Models;
+using Pricaution.WebScraper.Parsers;
 
 namespace Pricaution.WebScraper.Helpers
 {

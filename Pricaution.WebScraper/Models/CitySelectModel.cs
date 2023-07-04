@@ -1,4 +1,4 @@
-﻿namespace Pricaution.WebScraper
+﻿namespace Pricaution.WebScraper.Models
 {
 	public enum CitySelectModel
 	{

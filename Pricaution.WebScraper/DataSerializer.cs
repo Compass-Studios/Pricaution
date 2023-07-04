@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Pricaution.WebScraper.Models;
 
 namespace Pricaution.WebScraper
 {

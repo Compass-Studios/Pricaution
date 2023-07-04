@@ -1,4 +1,4 @@
-﻿namespace Pricaution.WebScraper
+﻿namespace Pricaution.WebScraper.Parsers
 {
 	internal static class DataParser
 	{
