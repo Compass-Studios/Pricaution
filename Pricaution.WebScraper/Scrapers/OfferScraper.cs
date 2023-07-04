@@ -50,6 +50,7 @@ namespace Pricaution.WebScraper.Scrapers
 
 			try
 			{
+				AnsiConsole.MarkupLine($"[yellow]{url}[/]");
 				string name = driver.FindElement(By.ClassName("css-1wnihf5")).Text;
 				IWebElement imageCarousel = driver.FindElement(By.ClassName("image-gallery-thumbnails-container"));
 				IWebElement[] _images = imageCarousel.FindElements(By.TagName("img")).ToArray();
@@ -58,60 +59,88 @@ namespace Pricaution.WebScraper.Scrapers
 				{
 					images.Add(image.GetAttribute("src"));
 				}
-				
+
 				string _street = driver.FindElement(By.ClassName(LocationTextClass)).Text; // Get street
 				string? street = DataParser.Street(_street); // Parse street
 				if (street is null)
 					return null;
 
 				string city = cityModel.ToString();
-
-				string _floor = driver.FindElementByAriaLabel("Piętro").FindElement(By.ClassName(MainDetailClass)).Text; // Get floor
+				
 				short floor;
 				short maxFloor;
-				switch (_floor.Split('/')[0])
-				{
-					case "sutenera":
-					{
-						floor = -1;
-						break;
-					}
-					case "parter":
-					{
-						floor = 0;
-						break;
-					}
-					default:
-					{
-						floor = Convert.ToInt16(_floor.Split('/')[0]);
-						break;
-					}
-				}
-
 				try
 				{
-					maxFloor = Convert.ToInt16(_floor.Split('/')[1]); // Parse max floor
+					string _floor = driver.FindElementByAriaLabel("Piętro").FindElement(By.ClassName(MainDetailClass)).Text; // Get floor
+
+					AnsiConsole.WriteLine($"Floor: {_floor}");
+					
+					switch (_floor.Split('/')[0])
+					{
+						case "sutenera":
+						{
+							floor = -1;
+							break;
+						}
+						case "parter":
+						{
+							floor = 0;
+							break;
+						}
+						case "poddasze":
+						{
+							try
+							{
+								floor = Convert.ToInt16(_floor.Split('/')[1]);
+							}
+							catch
+							{
+								return null;
+							}
+							break;
+						}
+						default:
+						{
+							floor = Convert.ToInt16(_floor.Split('/')[0]);
+							break;
+						}
+					}
+					try
+					{
+						maxFloor = Convert.ToInt16(_floor.Split('/')[1]); // Parse max floor
+					}
+					catch
+					{
+						maxFloor = floor;
+					}
 				}
 				catch
 				{
-					maxFloor = floor;
+					return null;
 				}
 
 				string _price = driver.FindElementByAriaLabel("Cena").Text.Replace(" ", ""); // Get price
+				AnsiConsole.WriteLine($"Price: {_price}");
 				if (_price.Contains("Zapytajocenę"))
 					return null;
-				uint price = Convert.ToUInt32(_price.Substring(0, _price.Length - 2)); // Parse Price
+				uint price = (uint)MathF.Floor(float.Parse(_price.Substring(0, _price.Length - 2))); // Parse Price
+				if (price > 3_000_000)
+					return null;
 
 				string _rooms = driver.FindElementByAriaLabel("Liczba pokoi").FindElement(By.ClassName(MainDetailClass)).Text; // Get Rooms
+				AnsiConsole.WriteLine($"Rooms: {_rooms}");
 				ushort rooms = Convert.ToUInt16(_rooms); // Parse rooms
 
 				string _sq = driver.FindElementByAriaLabel("Powierzchnia").FindElement(By.ClassName(MainDetailClass)).Text; // Get area
+				AnsiConsole.WriteLine($"Sq: {_sq}");
 				float.TryParse(_sq.Substring(0, _sq.Length - 3), out float sq); // Parse area
 
 				string? _year = driver.TryFindElementByAriaLabel("Rok budowy")?.TryFindElement(By.ClassName(MainDetailClass))?.Text; // Get year
+				AnsiConsole.WriteLine($"Year: {_year}");
 				ushort? year = _year is not null ? Convert.ToUInt16(_year) : null; // Parse year
 
 				string? _elevator = driver.TryFindElementByAriaLabel("Winda")?.TryFindElement(By.ClassName(MainDetailClass))?.Text; // Get elevator
+				AnsiConsole.WriteLine($"Elevator: {_elevator}");
 				bool elevator = false; // Parse elevator
 				switch (_elevator)
 				{
@@ -148,6 +177,7 @@ namespace Pricaution.WebScraper.Scrapers
 					Elevator = elevator
 				};
 			}
+			catch (NoSuchElementException) { }
 			catch (Exception e)
 			{
 				AnsiConsole.WriteException(e);
