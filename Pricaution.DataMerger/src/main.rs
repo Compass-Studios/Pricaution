@@ -12,9 +12,9 @@ struct DataEntry {
     address: String,
     city: String,
     floor: i16,
-    price: u32,
+    price: f64,
     rooms: u16,
-    sq: f32,
+    sq: f64,
     year: Option<i32>,
 }
 
