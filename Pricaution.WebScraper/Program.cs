@@ -27,7 +27,7 @@ namespace Pricaution.WebScraper
 					new SelectionPrompt<BrowserDriver>()
 						.Title("Select [green bold]browser[/] you want to use")
 						.PageSize(3)
-						.AddChoices(BrowserDriver.Chrome, BrowserDriver.Edge, BrowserDriver.Firefox));
+						.AddChoices(BrowserDriver.Chrome, BrowserDriver.Edge));
 			}, false);
 
 			// Get city to scrape
@@ -65,13 +65,16 @@ namespace Pricaution.WebScraper
 
 			List<string> listingLinks = MainPageScraper.Scrape(driver, CitySelectParser.Parse(cityChoice));
 
+			driver.Quit();
 			// What the actual FUCK. I don't know why results are duplicated, but Distinct() removes most of them*
 			// *most of them - from my test it should return 656, but it returned 658
 			// It kinda works, so don't touch it, I might try fix it in future
 			listingLinks = listingLinks.Distinct().ToList();
 
 			AnsiConsole.MarkupLine($"[green]Listings: {listingLinks.Count}[/]");
-
+			
+			BrowserHelper.SetupBrowser(out driver, browserChoice, headless);
+			
 			List<OfferModel> offers = OfferScraper.Scrape(driver, listingLinks, cityChoice);
 
 			AnsiConsole.MarkupLine($"[green]Viable offers: {listingLinks.Count}[/]");

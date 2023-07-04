@@ -34,8 +34,8 @@ namespace Pricaution.WebScraper.Scrapers
 						else
 							task.Increment(100d / pageCount);
 
-						if (!isLastPage)
-							Thread.Sleep(2_000);
+						// if (!isLastPage)
+							// Thread.Sleep(2_000);
 					}
 				});
 

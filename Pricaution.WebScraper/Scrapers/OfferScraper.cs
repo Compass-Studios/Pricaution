@@ -34,8 +34,8 @@ namespace Pricaution.WebScraper.Scrapers
 
 						task.Increment(100d / listingLinks.Count);
 
-						if (!isLastOffer)
-							Thread.Sleep(ArgumentParser.GetValue("threshold", out string value) ? Convert.ToInt32(value) : 5000);
+						// if (!isLastOffer)
+							// Thread.Sleep(ArgumentParser.GetValue("threshold", out string value) ? Convert.ToInt32(value) : 5000);
 					}
 				});
 
@@ -151,7 +151,6 @@ namespace Pricaution.WebScraper.Scrapers
 			catch (Exception e)
 			{
 				AnsiConsole.WriteException(e);
-				driver.Manage().Window.Position = new Point(0, 0);
 			}
 
 			return null;

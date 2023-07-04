@@ -14,30 +14,32 @@ namespace Pricaution.WebScraper.Helpers
 			{
 				case BrowserDriver.Edge:
 				{
-					driver = new EdgeDriver();
+					EdgeOptions o = new();
+					o.AddArgument("--no-sandbox");
+					driver = new EdgeDriver(EdgeDriverService.CreateDefaultService(), o, TimeSpan.FromMinutes(5));
 					if (!headless)
-						driver.Manage().Window.Position = new Point(-2000, 0);
+						driver.Manage().Window.Position = new Point(0, -2000);
+					driver.Manage().Timeouts().PageLoad.Add(TimeSpan.FromMilliseconds(ArgumentParser.GetValue("threashold", out string value) ? Convert.ToDouble(value) : 5000));
 					break;
 				}
 				case BrowserDriver.Chrome:
 				{
-					driver = new ChromeDriver();
-					if (!headless)
-						driver.Manage().Window.Position = new Point(-2000, 0);
-					break;
-				}
-				case BrowserDriver.Firefox:
-				{
-					driver = new FirefoxDriver();
-					if (!headless)
-						driver.Manage().Window.Position = new Point(-2000, 0);
+					ChromeOptions o = new();
+					o.AddArgument("--no-sandbox");
+					driver = new ChromeDriver(ChromeDriverService.CreateDefaultService(), o, TimeSpan.FromMinutes(5));
+					if (headless)
+						driver.Manage().Window.Position = new Point(0, -2000);
+					driver.Manage().Timeouts().PageLoad.Add(TimeSpan.FromMilliseconds(ArgumentParser.GetValue("threashold", out string value) ? Convert.ToDouble(value) : 5000));
 					break;
 				}
 				default:
 				{
-					driver = new EdgeDriver();
-					if (!headless)
-						driver.Manage().Window.Position = new Point(-2000, 0);
+					EdgeOptions o = new();
+					o.AddArgument("--no-sandbox");
+					driver = new EdgeDriver(EdgeDriverService.CreateDefaultService(), o, TimeSpan.FromMinutes(5));
+					if (headless)
+						driver.Manage().Window.Position = new Point(0, -2000);
+					driver.Manage().Timeouts().PageLoad.Add(TimeSpan.FromMilliseconds(ArgumentParser.GetValue("threashold", out string value) ? Convert.ToDouble(value) : 5000));
 					break;
 				}
 			}
@@ -56,7 +58,7 @@ try {
 }
 """;
 				
-				// Scroll to bottom to bypass lazy-loading & reemove "Promoted listings"
+				// Scroll to bottom to bypass lazy-loading & remove "Promoted listings"
 				driver.ExecuteScript(scrollAndRemoveScript, "");
 			}
 			catch
@@ -76,7 +78,7 @@ try {
 			// felt cute, might delete later
 			string removePinScript = """
 try {
-document.querySelectorAll('.fa-map-marker-alt')[0].remove();
+	document.querySelectorAll('.fa-map-marker-alt')[0].remove();
 } catch {
 
 }
