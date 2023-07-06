@@ -1,13 +1,15 @@
 "use client"
-import {Container, Typography} from "@mui/material";
+import {Box, Container, Typography} from "@mui/material";
 import Header from "./components/header/Header";
 export default function Home() {
   return (
-    <Container>
+    <Box>
         <Header />
-      <Typography variant="h1">
-          Be precautious with your purchase
-      </Typography>
-    </Container>
+        <Container>
+            <Typography variant="h3" sx={{ color: "#4B37C0"}}>
+                Be precautious with your purchase
+            </Typography>
+        </Container>
+    </Box>
   )
 }
