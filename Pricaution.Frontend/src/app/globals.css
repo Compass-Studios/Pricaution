@@ -3,13 +3,6 @@
   --background-rgb: 247, 250, 253;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 153, 153, 153;
-    --background-rgb: 12, 12, 12;
-  }
-}
-
 * {
   box-sizing: border-box;
   padding: 0;
@@ -29,10 +22,4 @@ body {
 
 a {
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
 }
