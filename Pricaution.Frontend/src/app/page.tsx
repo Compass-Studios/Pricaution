@@ -2,11 +2,13 @@
 import {Box, Container, Typography} from "@mui/material";
 import Header from "./components/header/Header";
 import Searcher from "./components/main/Searcher";
+import Sort from "./components/main/Sort";
+
 export default function Home() {
   return (
     <Box>
         <Header />
-        <Container sx={{display: "flex", justifyContent:"flex-start"}}>
+        <Container sx={{display: "flex", justifyContent:"flex-start", marginTop: "5vh"}}>
             <Typography variant="h4" sx={{ color: "#4B37C0"}}>
                 Be precautious with&nbsp;
             </Typography>
@@ -15,6 +17,7 @@ export default function Home() {
             </Typography>
         </Container>
         <Searcher />
+        <Sort />
     </Box>
   )
 }

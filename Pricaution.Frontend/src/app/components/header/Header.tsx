@@ -14,7 +14,7 @@ export default function Header() {
                 <Box>
                     {pages.map((item) => (
                         <Button key={item}>
-                            <Typography key="href" component="a" href="/" sx={{ color: 'rgb(80, 78, 78)', fontSize: "20px", margin: "1vh"}}>
+                            <Typography key="href" component="a" href="/" sx={{ color: 'rgb(80, 78, 78)', fontSize: "20px", margin: "1vh", fontWeight: "bold"}}>
                                 {item}
                             </Typography>
                         </Button>
